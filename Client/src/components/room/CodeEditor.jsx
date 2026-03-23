@@ -14,24 +14,16 @@ export default function CodeEditor({
 }) {
   const editorRef = useRef(null);
   const socketRef = useRef(null);
-  const isLocalChange = useRef(false);
+  const currentCodeRef = useRef(code);
+
+  useEffect(() => {
+    currentCodeRef.current = code;
+  }, [code]);
 
   useEffect(() => {
     if (!roomId) return;
-    const socket = getSocket();
-    socketRef.current = socket;
-
-    const handleCodeUpdate = (newCode) => {
-      if (onChange && !isLocalChange.current) {
-        isLocalChange.current = true;
-        onChange(newCode);
-        setTimeout(() => { isLocalChange.current = false; }, 100);
-      }
-    };
-
-    socket.on("code-update", handleCodeUpdate);
-    return () => { socket.off("code-update", handleCodeUpdate); };
-  }, [roomId, onChange]);
+    socketRef.current = getSocket();
+  }, [roomId]);
 
   const handleEditorMount = (editor, monaco) => {
     editorRef.current = editor;
@@ -128,10 +120,10 @@ export default function CodeEditor({
 
   const handleCodeChange = (value) => {
     if (onChange) onChange(value);
-    if (roomId && socketRef.current?.connected && !isLocalChange.current) {
-      isLocalChange.current = true;
+    
+    // Only emit back if the updated value differs from the external prop value.
+    if (roomId && socketRef.current?.connected && value !== currentCodeRef.current) {
       socketRef.current.emit("code-update", { roomId, code: value });
-      setTimeout(() => { isLocalChange.current = false; }, 100);
     }
   };
 

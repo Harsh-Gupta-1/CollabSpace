@@ -51,7 +51,7 @@ const socketHandler = (io) => {
       if (roomStates[roomId]) {
         roomStates[roomId].code = code;
       }
-      io.to(roomId).emit("code-update", code);
+      socket.broadcast.to(roomId).emit("code-update", code);
     });
 
     socket.on("whiteboard-update", ({ roomId, data }) => {
