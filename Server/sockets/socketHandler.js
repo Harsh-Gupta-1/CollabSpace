@@ -1,4 +1,3 @@
-import { throttle } from 'lodash-es';
 
 const socketHandler = (io) => {
   const roomUsers = {};
@@ -7,16 +6,12 @@ const socketHandler = (io) => {
   const emitRoomUsers = (roomId) => {
     const users = roomUsers[roomId]
       ? Array.from(roomUsers[roomId].entries()).map(([id, username]) => ({
-          id,
-          username,
-        }))
+        id,
+        username,
+      }))
       : [];
     io.to(roomId).emit("room-users", { users });
   };
-
-  const throttledEmit = throttle((roomId, data) => {
-    io.to(roomId).emit("whiteboard-update", { data });
-  }, 50);
 
   io.on("connection", (socket) => {
     console.log(`Socket connected: ${socket.id}`);
@@ -93,7 +88,7 @@ const socketHandler = (io) => {
           roomStates[roomId].whiteboard = data.canvasData;
         }
       }
-      throttledEmit(roomId, data);
+      socket.broadcast.to(roomId).emit("whiteboard-update", { data });
     });
 
     socket.on("get-room-state", ({ roomId }) => {
