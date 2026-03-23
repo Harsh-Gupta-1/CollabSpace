@@ -1,93 +1,129 @@
-import {
-  PenTool,
-  Code,
-  MessageSquare,
-  Share2,
-  Layers,
-  Shield
-} from "lucide-react";
+import { useState } from 'react';
 
 export default function FeaturesSection() {
   const features = [
     {
-      icon: PenTool,
-      title: "Interactive Whiteboard",
-      description: "Draw, sketch, and brainstorm together with real-time collaboration and multiple drawing tools.",
-      gradient: "from-purple-50 to-indigo-50",
-      border: "border-purple-100",
-      iconColor: "text-purple-600"
+      icon: "architecture",
+      title: "Technical Whiteboarding",
+      description:
+        "Low-latency vector canvas optimized for complex system design. Snap-to-grid accuracy for architectural purity.",
+      color: "primary",
+      span: "md:col-span-7",
     },
     {
-      icon: Code,
-      title: "Live Code Editor",
-      description: "Write JavaScript code together with syntax highlighting and real-time editing. More languages coming soon!",
-      gradient: "from-blue-50 to-purple-50",
-      border: "border-blue-100",
-      iconColor: "text-blue-600"
+      icon: "terminal",
+      title: "Cloud Execution",
+      description:
+        "Write and execute code in shared containers. Synchronized state across all connected clients.",
+      color: "secondary",
+      span: "md:col-span-5",
     },
     {
-      icon: MessageSquare,
-      title: "Integrated Chat",
-      description: "Communicate instantly with your team without leaving your workspace. Always stay connected.",
-      gradient: "from-green-50 to-blue-50",
-      border: "border-green-100",
-      iconColor: "text-green-600"
+      icon: "forum",
+      title: "Contextual Sync",
+      description:
+        "Voice channels and spatial chat that understands your position on the infinite canvas.",
+      color: "tertiary",
+      span: "md:col-span-5",
     },
     {
-      icon: Share2,
-      title: "Easy Room Sharing",
-      description: "Share room IDs instantly with team members. No complex setup or installation required.",
-      gradient: "from-indigo-50 to-purple-50",
-      border: "border-indigo-100",
-      iconColor: "text-indigo-600"
+      icon: "dns",
+      title: "Edge Infrastructure",
+      description:
+        "Global relay network ensures sub-50ms latency for teams distributed across continents.",
+      color: "primary",
+      span: "md:col-span-7",
     },
-    {
-      icon: Layers,
-      title: "Multiple View Modes",
-      description: "Switch between whiteboard, code editor, or split view modes to match your workflow.",
-      gradient: "from-purple-50 to-pink-50",
-      border: "border-purple-100",
-      iconColor: "text-purple-600"
-    },
-    {
-      icon: Shield,
-      title: "Secure & Private",
-      description: "Your data is secure with MongoDB storage and private rooms. Full control over your workspace.",
-      gradient: "from-gray-50 to-purple-50",
-      border: "border-gray-100",
-      iconColor: "text-gray-600"
-    }
   ];
 
+  const getColorClasses = (color) => {
+    switch (color) {
+      case "primary":
+        return {
+          iconBg: "bg-primary/10 border-primary/20",
+          iconText: "text-primary",
+          glow: "group-hover:bg-primary/10",
+        };
+      case "secondary":
+        return {
+          iconBg: "bg-secondary/10 border-secondary/20",
+          iconText: "text-secondary",
+          glow: "",
+        };
+      case "tertiary":
+        return {
+          iconBg: "bg-tertiary/10 border-tertiary/20",
+          iconText: "text-tertiary",
+          glow: "",
+        };
+      default:
+        return {
+          iconBg: "bg-primary/10 border-primary/20",
+          iconText: "text-primary",
+          glow: "",
+        };
+    }
+  };
+
   return (
-    <section id="features" className="py-20 bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">
-            Powerful Features
+    <section
+      id="features"
+      className="py-24 px-6 bg-surface-container-low border-y border-outline-variant/10"
+    >
+      <div className="max-w-7xl mx-auto">
+        <div className="mb-16">
+          <div className="flex items-center gap-4 mb-4">
+            <div className="h-px w-12 bg-primary"></div>
+            <p className="text-primary font-label text-[11px] tracking-[0.4em] uppercase">
+              Architecture & Execution
+            </p>
+          </div>
+          <h2 className="font-headline text-4xl md:text-5xl font-bold uppercase tracking-tight leading-none">
+            Engineered for Flow
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Everything you need for seamless team collaboration in one
-            integrated platform.
-          </p>
         </div>
 
-        {/* Feature Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
           {features.map((feature, index) => {
-            const IconComponent = feature.icon;
+            const colors = getColorClasses(feature.color);
+            const isLarge = feature.span === "md:col-span-7";
+
             return (
               <div
                 key={index}
-                className={`bg-gradient-to-br ${feature.gradient} p-6 rounded-xl border ${feature.border}`}
+                className={`${feature.span} bg-surface ${isLarge ? "p-10" : "bg-surface-container-high p-10"} rounded-lg border border-outline-variant/${isLarge ? "10" : "20"} relative overflow-hidden group card-texture flex flex-col justify-between`}
               >
-                <IconComponent className={`w-10 h-10 ${feature.iconColor} mb-4`} />
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  {feature.title}
-                </h3>
-                <p className="text-gray-600">
-                  {feature.description}
-                </p>
+                <div className="relative z-10">
+                  <div
+                    className={`w-12 h-12 flex items-center justify-center ${colors.iconBg} border rounded-sm mb-8`}
+                  >
+                    <span className={`material-symbols-outlined text-2xl ${colors.iconText}`}>
+                      {feature.icon}
+                    </span>
+                  </div>
+                  <h3
+                    className={`font-headline ${isLarge ? "text-2xl" : "text-xl"} font-bold mb-4 tracking-tight`}
+                  >
+                    {feature.title}
+                  </h3>
+                  <p
+                    className={`text-on-surface-variant ${isLarge ? "max-w-sm" : ""} leading-relaxed text-sm`}
+                  >
+                    {feature.description}
+                  </p>
+                </div>
+                {isLarge && feature.color === "primary" && (
+                  <div
+                    className={`absolute right-[-10%] top-[-10%] w-[40%] aspect-square bg-primary/5 rounded-full blur-[80px] ${colors.glow} transition-colors`}
+                  ></div>
+                )}
+                {isLarge && feature.icon === "dns" && (
+                  <div className="absolute right-8 bottom-8 opacity-5 group-hover:opacity-10 transition-opacity">
+                    <span className="material-symbols-outlined text-[120px]">
+                      electric_bolt
+                    </span>
+                  </div>
+                )}
               </div>
             );
           })}

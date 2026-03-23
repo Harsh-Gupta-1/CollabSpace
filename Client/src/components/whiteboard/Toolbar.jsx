@@ -1,89 +1,96 @@
 import { useState } from "react";
-import { 
-  MousePointer2,  
-  Type, 
-  Move, 
-  RotateCcw, 
-  ZoomIn,
-  ZoomOut,
-  Maximize2,
-  Settings
-} from "lucide-react";
+import { DS } from "./fabricDesignSystem";
 
-export default function Toolbar({ 
-  tool, // Now receiving tool as prop
-  setTool, 
-  addShape, 
-  addText, 
-  deleteSelected, 
-  undo, 
-  clearCanvas, 
-  resetZoom, 
-  zoomIn, 
-  zoomOut, 
-  setColor, 
-  setBrushSize, 
-  zoom, 
-  color, 
-  brushSize 
-}) {
-  const [showShapes, setShowShapes] = useState(false);
-  const [showSettings, setShowSettings] = useState(false);
-
-  // Color palette
-  const colors = [
-   "#4f46e5", "#ff3b30", "#00d4aa", "#ff9500", 
-   "#bf5af2", "#ff2d92", "#1d1d1f", "#34c759"
+const ACCENTS = [
+  { hex: DS.primary, name: "Primary" },
+  { hex: DS.secondary, name: "Secondary" },
+  { hex: DS.tertiary, name: "Tertiary" },
+  { hex: DS.onSurfaceVariant, name: "Muted" },
+  { hex: DS.onSurface, name: "Highlight" },
 ];
 
-  // Handle tool change
-  const handleToolChange = (newTool) => {
-    setTool(newTool);
-  };
+function isShapeTool(t) {
+  return Boolean(t && t.startsWith("shape-"));
+}
 
-  // Handle shape addition with automatic tool switching
-  const handleShapeAdd = (shapeType) => {
-    addShape(shapeType);
-    setShowShapes(false); // Close the shapes dropdown
-  };
+export default function Toolbar({
+  tool,
+  setTool,
+  deleteSelected,
+  undo,
+  clearCanvas,
+  resetZoom,
+  zoomIn,
+  zoomOut,
+  setColor,
+  setBrushSize,
+  zoom,
+  color,
+  brushSize,
+}) {
+  const [showSettings, setShowSettings] = useState(false);
 
-  // Handle text addition with automatic tool switching
-  const handleTextAdd = () => {
-    addText();
+  const activeClass =
+    "flex h-10 w-10 shrink-0 items-center justify-center rounded-sm bg-primary text-on-primary transition-colors";
+  const defaultClass =
+    "flex h-10 w-10 shrink-0 items-center justify-center rounded-sm text-on-surface-variant transition-colors hover:bg-surface-container-high hover:text-primary";
+
+  const panelClass =
+    "absolute left-[4.5rem] top-1/2 z-40 max-h-[min(22rem,calc(100%-2rem))] min-w-[220px] -translate-y-1/2 overflow-y-auto rounded-lg bg-surface-container-highest p-4 font-label ring-1 ring-outline-variant/[0.15]";
+
+  const shapePanelClass =
+    "absolute left-[4.5rem] top-1/2 z-40 max-h-[min(22rem,calc(100%-2rem))] w-[8.5rem] -translate-y-1/2 overflow-y-auto rounded-lg bg-surface-container-highest p-3 font-label ring-1 ring-outline-variant/[0.15]";
+
+  const showShapePicker = isShapeTool(tool);
+
+  const closeSettingsOpenShapes = () => setShowSettings(false);
+
+  const toggleSettingsPanel = () => {
+    setShowSettings((open) => {
+      if (open) return false;
+      setTool("select");
+      return true;
+    });
   };
 
   return (
     <>
-      {/* Settings Panel */}
       {showSettings && (
-        <div className="absolute top-4 left-4 z-30 bg-white/90 backdrop-blur-sm border border-indigo-200/50 rounded-2xl p-4 shadow-lg min-w-[200px]">
-          <div className="space-y-4">
+        <div className={panelClass}>
+          <p className="mb-4 font-label text-[10px] font-semibold uppercase tracking-[0.2em] text-on-surface-variant">
+            Stroke & ink
+          </p>
+          <div className="space-y-5">
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Brush Size: {brushSize}px
+              <label className="mb-2 block font-label text-[10px] font-semibold uppercase tracking-[0.15em] text-on-surface">
+                Weight — {brushSize}px
               </label>
               <input
                 type="range"
                 min="1"
-                max="20"
+                max="24"
                 value={brushSize}
-                onChange={(e) => setBrushSize(parseInt(e.target.value))}
-                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+                onChange={(e) => setBrushSize(parseInt(e.target.value, 10))}
+                className="slider-thumb-primary h-1 w-full cursor-pointer appearance-none rounded-lg bg-surface-container-lowest outline-none"
               />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Color Palette
+              <label className="mb-2 block font-label text-[10px] font-semibold uppercase tracking-[0.15em] text-on-surface">
+                Functional accents
               </label>
-              <div className="grid grid-cols-4 gap-2">
-                {colors.map((c) => (
+              <div className="grid grid-cols-5 gap-2">
+                {ACCENTS.map(({ hex, name }) => (
                   <button
-                    key={c}
-                    onClick={() => setColor(c)}
-                    className={`w-8 h-8 rounded-lg border-2 transition-all hover:scale-110 ${
-                      color === c ? 'border-gray-800 shadow-md' : 'border-gray-300'
+                    key={hex}
+                    type="button"
+                    title={name}
+                    onClick={() => setColor(hex)}
+                    className={`relative h-8 w-full rounded-sm transition-transform hover:scale-105 ${
+                      color === hex
+                        ? "ring-2 ring-primary ring-offset-2 ring-offset-surface-container-highest"
+                        : "ring-1 ring-outline-variant/20"
                     }`}
-                    style={{ backgroundColor: c }}
+                    style={{ backgroundColor: hex }}
                   />
                 ))}
               </div>
@@ -92,186 +99,297 @@ export default function Toolbar({
         </div>
       )}
 
-      {/* Zoom Indicator */}
-      <div className="absolute top-4 right-4 z-20 bg-white/90 backdrop-blur-sm border border-indigo-200/50 rounded-xl px-3 py-2 shadow-lg">
-        <div className="flex items-center gap-2">
-          <button onClick={zoomOut} className="p-1 hover:bg-gray-100 rounded transition-colors">
-            <ZoomOut className="w-4 h-4 text-gray-600" />
-          </button>
-          <span className="text-sm font-semibold text-gray-700 min-w-[3rem] text-center">
-            {zoom}%
-          </span>
-          <button onClick={zoomIn} className="p-1 hover:bg-gray-100 rounded transition-colors">
-            <ZoomIn className="w-4 h-4 text-gray-600" />
-          </button>
-        </div>
-      </div>
-
-      {/* Compact Toolbar */}
-      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-20">
-        <div className="bg-white/85 backdrop-blur-xl border border-indigo-200/50 rounded-3xl p-3 shadow-lg">
-          <div className="flex items-center gap-3">
-            {/* Select Tool */}
+      {showShapePicker && (
+        <div className={shapePanelClass}>
+          <p className="mb-2 font-label text-[9px] font-semibold uppercase tracking-[0.2em] text-on-surface-variant">
+            Press and drag on canvas
+          </p>
+          <div className="grid grid-cols-3 gap-1">
             <button
-              onClick={() => handleToolChange('select')}
-              className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${
-                tool === 'select' 
-                  ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-lg' 
-                  : 'bg-gray-100 hover:bg-gray-200 text-gray-600'
+              type="button"
+              onClick={() => {
+                closeSettingsOpenShapes();
+                setTool("shape-rect");
+              }}
+              className={`flex h-10 w-10 items-center justify-center rounded-sm transition-colors ${
+                tool === "shape-rect"
+                  ? "bg-surface-container-high text-primary"
+                  : "text-on-surface hover:bg-surface-container-high hover:text-primary"
               }`}
-              title="Select"
+              title="Rectangle"
             >
-              <MousePointer2 className="w-4 h-4" />
+              <span className="material-symbols-outlined text-lg">rectangle</span>
             </button>
-
-            {/* Pen Tool */}
             <button
-              onClick={() => handleToolChange('pen')}
-              className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${
-                tool === 'pen' 
-                  ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-lg' 
-                  : 'bg-gray-100 hover:bg-gray-200 text-gray-600'
+              type="button"
+              onClick={() => {
+                closeSettingsOpenShapes();
+                setTool("shape-circle");
+              }}
+              className={`flex h-10 w-10 items-center justify-center rounded-sm transition-colors ${
+                tool === "shape-circle"
+                  ? "bg-surface-container-high text-primary"
+                  : "text-on-surface hover:bg-surface-container-high hover:text-primary"
               }`}
-              title="Pen"
+              title="Ellipse"
             >
-              ✏️
+              <span className="material-symbols-outlined text-lg">radio_button_unchecked</span>
             </button>
-
-            {/* Shapes Tool */}
-            <div className="relative">
-              <button
-                onClick={() => setShowShapes(!showShapes)}
-                className="w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-xl flex items-center justify-center transition-all text-gray-600"
-                title="Shapes"
-              >
-                ⬜
-              </button>
-              {showShapes && (
-                <div className="absolute bottom-full mb-2 left-0 bg-white/90 backdrop-blur-sm border border-indigo-200/50 rounded-2xl shadow-lg p-3">
-                  <div className="flex gap-2">
-                    <button 
-                      onClick={() => handleShapeAdd('rect')} 
-                      className="w-8 h-8 hover:bg-gray-100 rounded-lg flex items-center justify-center text-lg"
-                      title="Rectangle"
-                    >
-                      ⬜
-                    </button>
-                    <button 
-                      onClick={() => handleShapeAdd('circle')} 
-                      className="w-8 h-8 hover:bg-gray-100 rounded-lg flex items-center justify-center text-lg"
-                      title="Circle"
-                    >
-                      ⭕
-                    </button>
-                    <button 
-                      onClick={() => handleShapeAdd('triangle')} 
-                      className="w-8 h-8 hover:bg-gray-100 rounded-lg flex items-center justify-center text-lg"
-                      title="Triangle"
-                    >
-                      🔺
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Text Tool */}
             <button
-              onClick={handleTextAdd}
-              className="w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-xl flex items-center justify-center transition-all text-gray-600"
-              title="Text (Auto-switches to select tool)"
-            >
-              <Type className="w-4 h-4" />
-            </button>
-
-            {/* Move Canvas Tool */}
-            <button
-              onClick={() => handleToolChange('move')}
-              className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${
-                tool === 'move' 
-                  ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-lg' 
-                  : 'bg-gray-100 hover:bg-gray-200 text-gray-600'
+              type="button"
+              onClick={() => {
+                closeSettingsOpenShapes();
+                setTool("shape-triangle");
+              }}
+              className={`flex h-10 w-10 items-center justify-center rounded-sm transition-colors ${
+                tool === "shape-triangle"
+                  ? "bg-surface-container-high text-primary"
+                  : "text-on-surface hover:bg-surface-container-high hover:text-primary"
               }`}
-              title="Move Canvas (Click and drag to pan)"
+              title="Triangle"
             >
-              <Move className="w-4 h-4" />
+              <span className="material-symbols-outlined text-lg">change_history</span>
             </button>
-
-            {/* Separator */}
-            <div className="w-px h-6 bg-gray-300"></div>
-
-            {/* Current Color Indicator */}
-            <div
-              className="w-10 h-10 rounded-xl border-2 border-white shadow-md cursor-pointer"
-              style={{ backgroundColor: color }}
-              onClick={() => setShowSettings(!showSettings)}
-              title="Current Color & Settings"
-            />
-
-            {/* Separator */}
-            <div className="w-px h-6 bg-gray-300"></div>
-
-            {/* Reset Zoom */}
             <button
-              onClick={resetZoom}
-              className="w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-xl flex items-center justify-center transition-all text-gray-600"
-              title="Reset Zoom (1:1)"
+              type="button"
+              onClick={() => {
+                closeSettingsOpenShapes();
+                setTool("shape-line");
+              }}
+              className={`flex h-10 w-10 items-center justify-center rounded-sm transition-colors ${
+                tool === "shape-line"
+                  ? "bg-surface-container-high text-primary"
+                  : "text-on-surface hover:bg-surface-container-high hover:text-primary"
+              }`}
+              title="Line"
             >
-              <Maximize2 className="w-4 h-4" />
+              <span className="material-symbols-outlined text-lg">horizontal_rule</span>
             </button>
-
-            {/* Delete Selected */}
             <button
-              onClick={deleteSelected}
-              className="w-10 h-10 bg-gray-100 hover:bg-red-100 hover:text-red-600 rounded-xl flex items-center justify-center transition-all text-gray-600"
-              title="Delete Selected"
+              type="button"
+              onClick={() => {
+                closeSettingsOpenShapes();
+                setTool("shape-diamond");
+              }}
+              className={`flex h-10 w-10 items-center justify-center rounded-sm transition-colors ${
+                tool === "shape-diamond"
+                  ? "bg-surface-container-high text-primary"
+                  : "text-on-surface hover:bg-surface-container-high hover:text-primary"
+              }`}
+              title="Diamond"
             >
-              🗑️
+              <span className="material-symbols-outlined text-lg">diamond</span>
             </button>
-
-            {/* Clear Canvas */}
             <button
-              onClick={clearCanvas}
-              className="w-10 h-10 bg-gray-100 hover:bg-red-100 hover:text-red-600 rounded-xl flex items-center justify-center transition-all text-gray-600"
-              title="Clear Canvas"
+              type="button"
+              onClick={() => {
+                closeSettingsOpenShapes();
+                setTool("shape-hexagon");
+              }}
+              className={`flex h-10 w-10 items-center justify-center rounded-sm transition-colors ${
+                tool === "shape-hexagon"
+                  ? "bg-surface-container-high text-primary"
+                  : "text-on-surface hover:bg-surface-container-high hover:text-primary"
+              }`}
+              title="Hexagon"
             >
-              🧹
+              <span className="material-symbols-outlined text-lg">hexagon</span>
             </button>
           </div>
         </div>
+      )}
+
+      <div className="pointer-events-none absolute left-4 top-4 bottom-36 z-30 flex min-h-0 flex-col items-start sm:left-6 sm:bottom-28">
+        <nav className="pointer-events-auto flex max-h-full min-h-0 w-[3.25rem] flex-col gap-3 overflow-y-auto overflow-x-hidden overscroll-contain rounded-lg bg-surface-container-highest p-1.5 shadow-[0_0_24px_-4px_rgba(115,255,227,0.1)] ring-1 ring-outline-variant/[0.15] [scrollbar-color:rgba(115,255,227,0.35)_transparent] [scrollbar-width:thin]">
+          <div className="flex shrink-0 flex-col items-center gap-0.5 py-1 opacity-40">
+            <div className="flex gap-1">
+              <div className="h-0.5 w-0.5 rounded-full bg-outline" />
+              <div className="h-0.5 w-0.5 rounded-full bg-outline" />
+            </div>
+            <div className="flex gap-1">
+              <div className="h-0.5 w-0.5 rounded-full bg-outline" />
+              <div className="h-0.5 w-0.5 rounded-full bg-outline" />
+            </div>
+            <div className="flex gap-1">
+              <div className="h-0.5 w-0.5 rounded-full bg-outline" />
+              <div className="h-0.5 w-0.5 rounded-full bg-outline" />
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                closeSettingsOpenShapes();
+                setTool("select");
+              }}
+              className={tool === "select" ? activeClass : defaultClass}
+              title="Select & move objects (drag empty area to box-select)"
+            >
+              <span
+                className="material-symbols-outlined"
+                style={{
+                  fontVariationSettings: tool === "select" ? "'FILL' 1" : "'FILL' 0",
+                }}
+              >
+                near_me
+              </span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                closeSettingsOpenShapes();
+                setTool("pen");
+              }}
+              className={tool === "pen" ? activeClass : defaultClass}
+              title="Draw"
+            >
+              <span className="material-symbols-outlined">edit</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                closeSettingsOpenShapes();
+                setTool("eraser");
+              }}
+              className={tool === "eraser" ? activeClass : defaultClass}
+              title="Hold left-click and drag across items to erase"
+            >
+              <span className="material-symbols-outlined">ink_eraser</span>
+            </button>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                setShowSettings(false);
+                setTool((t) => (isShapeTool(t) ? "select" : "shape-rect"));
+              }}
+              className={isShapeTool(tool) ? activeClass : defaultClass}
+              title="Shapes — drag on canvas to size. Click again to leave."
+            >
+              <span className="material-symbols-outlined">category</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                closeSettingsOpenShapes();
+                setTool((t) => (t === "text" ? "select" : "text"));
+              }}
+              className={tool === "text" ? activeClass : defaultClass}
+              title="Click once on canvas to place text"
+            >
+              <span className="material-symbols-outlined">text_fields</span>
+            </button>
+            <button
+              type="button"
+              onClick={toggleSettingsPanel}
+              className={defaultClass}
+              title="Stroke weight & color"
+            >
+              <div
+                className="h-4 w-4 rounded-sm ring-1 ring-outline-variant/30"
+                style={{ backgroundColor: color }}
+              />
+            </button>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                closeSettingsOpenShapes();
+                undo();
+              }}
+              className={defaultClass}
+              title="Undo"
+            >
+              <span className="material-symbols-outlined">undo</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                closeSettingsOpenShapes();
+                deleteSelected();
+              }}
+              className={`${defaultClass} hover:text-tertiary`}
+              title="Delete selected"
+            >
+              <span className="material-symbols-outlined">delete_sweep</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                closeSettingsOpenShapes();
+                clearCanvas();
+              }}
+              className={`${defaultClass} hover:text-error`}
+              title="Clear entire board"
+            >
+              <span className="material-symbols-outlined">delete_forever</span>
+            </button>
+          </div>
+        </nav>
+
+        <p className="pointer-events-none mt-2 max-w-[10rem] pl-0.5 font-label text-[8px] uppercase leading-snug tracking-[0.12em] text-on-surface-variant opacity-80">
+          Pan: space + drag or middle mouse
+        </p>
       </div>
 
-      {/* Click outside to close dropdowns */}
-      {(showShapes || showSettings) && (
-        <div 
-          className="absolute inset-0 z-10" 
-          onClick={() => {
-            setShowShapes(false);
-            setShowSettings(false);
-          }}
+      <div className="absolute bottom-4 left-4 right-4 z-40 flex max-w-full flex-wrap items-center gap-1 rounded-lg bg-surface-container-highest p-1.5 font-label shadow-[0_0_24px_-4px_rgba(115,255,227,0.1)] ring-1 ring-outline-variant/[0.15] sm:bottom-6 sm:left-6 sm:right-auto">
+        <button
+          type="button"
+          onClick={zoomOut}
+          className="flex h-8 w-8 items-center justify-center rounded-sm text-on-surface-variant transition-colors hover:bg-surface-container-high hover:text-primary"
+        >
+          <span className="material-symbols-outlined text-sm">remove</span>
+        </button>
+        <span className="min-w-[40px] px-2 text-center font-label text-[10px] font-bold uppercase tracking-[0.12em] text-on-surface">
+          {zoom}%
+        </span>
+        <button
+          type="button"
+          onClick={zoomIn}
+          className="flex h-8 w-8 items-center justify-center rounded-sm text-on-surface-variant transition-colors hover:bg-surface-container-high hover:text-primary"
+        >
+          <span className="material-symbols-outlined text-sm">add</span>
+        </button>
+        <button
+          type="button"
+          onClick={resetZoom}
+          className="ml-1 flex h-8 w-8 items-center justify-center rounded-sm text-on-surface-variant transition-colors hover:bg-surface-container-high hover:text-secondary"
+          title="Reset view"
+        >
+          <span className="material-symbols-outlined text-sm">center_focus_strong</span>
+        </button>
+      </div>
+
+      {showSettings && (
+        <div
+          className="absolute inset-0 z-20"
+          aria-hidden
+          onClick={() => setShowSettings(false)}
         />
       )}
 
-      {/* Custom Slider Styles */}
-      <style jsx>{`
-        .slider::-webkit-slider-thumb {
+      <style>{`
+        .slider-thumb-primary::-webkit-slider-thumb {
           appearance: none;
-          height: 20px;
-          width: 20px;
-          border-radius: 50%;
-          background: linear-gradient(to right, #4f46e5, #7c3aed);
+          width: 12px;
+          height: 12px;
+          border-radius: 2px;
+          background: ${DS.primary};
+          box-shadow: 0 0 24px -4px rgba(115, 255, 227, 0.35);
           cursor: pointer;
-          box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
-        
-        .slider::-moz-range-thumb {
-          height: 20px;
-          width: 20px;
-          border-radius: 50%;
-          background: linear-gradient(to right, #4f46e5, #7c3aed);
+        .slider-thumb-primary::-moz-range-thumb {
+          width: 12px;
+          height: 12px;
+          border-radius: 2px;
+          background: ${DS.primary};
           cursor: pointer;
           border: none;
-          box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
       `}</style>
     </>

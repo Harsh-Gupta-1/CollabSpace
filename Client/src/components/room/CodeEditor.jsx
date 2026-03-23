@@ -11,7 +11,6 @@ export default function CodeEditor({
   hideTerminal = false,
   hideHeader = false,
   roomId = null,
-  user, // Add user prop
 }) {
   const editorRef = useRef(null);
   const socketRef = useRef(null);
@@ -19,190 +18,163 @@ export default function CodeEditor({
 
   useEffect(() => {
     if (!roomId) return;
-
     const socket = getSocket();
     socketRef.current = socket;
 
     const handleCodeUpdate = (newCode) => {
-      console.log("Received code update:", newCode);
       if (onChange && !isLocalChange.current) {
         isLocalChange.current = true;
         onChange(newCode);
-        setTimeout(() => {
-          isLocalChange.current = false;
-        }, 100);
+        setTimeout(() => { isLocalChange.current = false; }, 100);
       }
     };
 
     socket.on("code-update", handleCodeUpdate);
-
-    return () => {
-      socket.off("code-update", handleCodeUpdate);
-    };
+    return () => { socket.off("code-update", handleCodeUpdate); };
   }, [roomId, onChange]);
 
   const handleEditorMount = (editor, monaco) => {
     editorRef.current = editor;
 
-    monaco.editor.defineTheme("ayuLight", {
-      base: "vs",
+    // --- DESIGN SYSTEM: THE TACTICAL BLUEPRINT ---
+    monaco.editor.defineTheme("precisionDark", {
+      base: "vs-dark",
       inherit: true,
       rules: [
-        { token: "comment", foreground: "abb0b6", fontStyle: "italic" },
-        { token: "keyword", foreground: "fa8d3e" },
-        { token: "operator", foreground: "ed9366" },
-        { token: "string", foreground: "86b300" },
-        { token: "number", foreground: "4cbf99" },
-        { token: "regexp", foreground: "4cbf99" },
-        { token: "type", foreground: "399ee6" },
-        { token: "variable", foreground: "55b4d4" },
-        { token: "function", foreground: "f2ae49" },
-        { token: "constant", foreground: "a37acc" },
-        { token: "class", foreground: "399ee6" },
-        { token: "interface", foreground: "399ee6" },
-        { token: "namespace", foreground: "399ee6" },
-        { token: "property", foreground: "55b4d4" },
-        { token: "method", foreground: "f2ae49" },
-        { token: "attribute", foreground: "a37acc" },
-        { token: "tag", foreground: "fa8d3e" },
+        // 1. PRIMARY: SYSTEM ACTIONS & STRUCTURE (#73ffe3)
+        { token: "keyword", foreground: "73ffe3", fontStyle: "bold" },
+        { token: "keyword.js", foreground: "73ffe3", fontStyle: "bold" },
+        { token: "operator", foreground: "73ffe3" },
+        { token: "operator.js", foreground: "73ffe3" },
+        { token: "function", foreground: "73ffe3" },
+        { token: "predefined", foreground: "73ffe3" },
+        { token: "type", foreground: "73ffe3" },
+
+        // 2. BLUEPRINT LINES: EXHAUSTIVE DELIMITER OVERRIDE (#73ffe3)
+        // This forces all brackets and parens to Cyan, killing the yellow/purple
+        { token: "delimiter", foreground: "73ffe3" },
+        { token: "delimiter.js", foreground: "73ffe3" },
+        { token: "delimiter.bracket", foreground: "73ffe3" },
+        { token: "delimiter.bracket.js", foreground: "73ffe3" },
+        { token: "delimiter.parenthesis", foreground: "73ffe3" },
+        { token: "delimiter.parenthesis.js", foreground: "73ffe3" },
+        { token: "delimiter.curly", foreground: "73ffe3" },
+        { token: "delimiter.curly.js", foreground: "73ffe3" },
+
+        // 3. NEUTRAL: PARTS & IDENTIFIERS (#adaaaa)
+        { token: "identifier", foreground: "adaaaa" },
+        { token: "identifier.js", foreground: "adaaaa" },
+        { token: "variable", foreground: "adaaaa" },
+        { token: "variable.js", foreground: "adaaaa" },
+        { token: "property", foreground: "adaaaa" },
+        { token: "property.js", foreground: "adaaaa" },
+        { token: "attribute.name", foreground: "adaaaa" },
+
+        // 4. SECONDARY: DATA PAYLOAD (#c3f400)
+        { token: "string", foreground: "c3f400" },
+        { token: "string.js", foreground: "c3f400" },
+
+        // 5. TERTIARY: HARDCODED CONSTANTS (#ffa44c)
+        { token: "number", foreground: "ffa44c" },
+        { token: "number.js", foreground: "ffa44c" },
+
+        // 6. ON_SURFACE_VARIANT
+        { token: "comment", foreground: "4a4a4a", fontStyle: "italic" },
       ],
       colors: {
-        "editor.background": "#fafafa",
-        "editor.foreground": "#5c6166",
-        "editorLineNumber.foreground": "#8a9199",
-        "editorLineNumber.activeForeground": "#5c6166",
-        "editor.selectionBackground": "#035bd626",
-        "editor.lineHighlightBackground": "#f0f0f000",
-        "editorCursor.foreground": "#ff6a00",
-        "editorWhitespace.foreground": "#5c61661a",
-        "editorIndentGuide.background": "#5c61661a",
-        "editorBracketMatch.background": "#5c616626",
-        "editorBracketMatch.border": "#5c616600",
+        "editor.background": "#0e0e0e",           // Base Surface
+        "editor.foreground": "#adaaaa",           // on_surface_variant
+        "editorLineNumber.foreground": "#3d3d3d", // Dimmed Gutters
+        "editorLineNumber.activeForeground": "#73ffe3",
+        "editor.lineHighlightBackground": "#161616",
+        "editor.selectionBackground": "#73ffe315",
+        "editorCursor.foreground": "#73ffe3",
+        "editorIndentGuide.background": "#1a1a1a",
+        "editorActiveLineNumber.foreground": "#73ffe3",
+        "editorBracketMatch.background": "#00000000",
+        "editorBracketMatch.border": "#00000000",
       },
     });
 
-    monaco.editor.setTheme("ayuLight");
+    monaco.editor.setTheme("precisionDark");
 
     editor.updateOptions({
-      fontSize: 16,
-      lineHeight: 26,
-      fontFamily: `"JetBrains Mono", "Fira Code", "SF Mono", "Monaco", "Cascadia Code", "Roboto Mono", Consolas, monospace`,
+      lineNumbers: "on",
+      lineNumbersMinChars: 4,
+      fontSize: 14,
+      lineHeight: 24,
+      fontFamily: "'JetBrains Mono', monospace",
       fontWeight: "400",
       letterSpacing: 0.5,
       cursorBlinking: "smooth",
-      bracketPairColorization: { enabled: false },
-      guides: {
-        bracketPairs: false,
-        indentation: false,
-      },
+      cursorSmoothCaretAnimation: "on",
       minimap: { enabled: false },
+      renderLineHighlight: "all",
       scrollbar: {
-        verticalScrollbarSize: 10,
-        horizontalScrollbarSize: 10,
+        verticalScrollbarSize: 8,
+        horizontalScrollbarSize: 8,
+        useShadows: false,
       },
-      smoothScrolling: true,
-      renderLineHighlight: "none",
-      lineNumbers: "on",
-      lineNumbersMinChars: 4,
-      glyphMargin: false,
+      padding: { top: 24 },
+      // CRITICAL: Hard-disable colorized brackets and semantic highlighting
+      bracketPairColorization: { enabled: false },
+      matchBrackets: "never",
       occurrencesHighlight: false,
       selectionHighlight: false,
-      matchBrackets: "never",
+      semanticHighlighting: { enabled: false },
       renderWhitespace: "none",
-      renderControlCharacters: false,
     });
   };
 
   const handleCodeChange = (value) => {
-    if (onChange) {
-      onChange(value);
-    }
+    if (onChange) onChange(value);
     if (roomId && socketRef.current?.connected && !isLocalChange.current) {
       isLocalChange.current = true;
       socketRef.current.emit("code-update", { roomId, code: value });
-      setTimeout(() => {
-        isLocalChange.current = false;
-      }, 100);
+      setTimeout(() => { isLocalChange.current = false; }, 100);
     }
   };
 
   return (
-    <div className="h-full flex flex-col bg-white">
+    <div className="h-full flex flex-col bg-[#0e0e0e] overflow-hidden">
       {!hideHeader && (
-        <div className="flex items-center justify-between px-3 py-2 bg-gray-100 border-b border-gray-200">
-          <div className="flex items-center gap-2">
-            <div className="flex gap-1.5">
-              <div className="w-3 h-3 rounded-full bg-red-400"></div>
-              <div className="w-3 h-3 rounded-full bg-yellow-400"></div>
-              <div className="w-3 h-3 rounded-full bg-green-400"></div>
-            </div>
-            <span className="text-gray-700 font-medium text-sm">app.js</span>
+        <div className="flex items-center justify-between px-8 py-4 bg-[#1a1a1a] select-none">
+          <div className="flex items-center gap-6">
+            <span className="font-['Space_Grotesk'] text-[10px] uppercase tracking-[0.2em] font-semibold text-[#73ffe3]">
+              Active_Buffer // index.js
+            </span>
           </div>
-
           <button
             onClick={onExecute}
-            className="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-all duration-200 hover:shadow-md cursor-pointer"
+            className="bg-[#73ffe3] text-[#0e0e0e] text-[10px] uppercase tracking-[0.1em] font-bold px-6 py-2 rounded-[0.125rem] transition-all hover:brightness-110 active:scale-[0.98]"
+            style={{ boxShadow: "0 0 24px -6px rgba(115,255,227,0.4)" }}
           >
-            Run Code
+            Run_Precision_Build
           </button>
         </div>
       )}
 
-      <div className={hideTerminal ? "flex-1" : "flex-1"}>
+      <div className="flex-1 relative">
         <Editor
           height="100%"
           defaultLanguage="javascript"
-          theme="ayuLight"
+          theme="precisionDark"
           value={code}
           onChange={handleCodeChange}
           onMount={handleEditorMount}
-          options={{
-            fontSize: 16,
-            lineHeight: 26,
-            minimap: { enabled: false },
-            scrollbar: {
-              verticalScrollbarSize: 10,
-              horizontalScrollbarSize: 10,
-              useShadows: false,
-              verticalHasArrows: false,
-              horizontalHasArrows: false,
-            },
-            lineNumbers: "on",
-            lineNumbersMinChars: 4,
-            glyphMargin: false,
-            folding: true,
-            lineDecorationsWidth: 0,
-            suggestOnTriggerCharacters: false,
-            quickSuggestions: false,
-            parameterHints: false,
-            wordBasedSuggestions: false,
-            inlineSuggest: false,
-            renderWhitespace: "none",
-            renderLineHighlight: "none",
-            fontFamily:
-              '"JetBrains Mono", "Fira Code", "SF Mono", "Monaco", "Cascadia Code", "Roboto Mono", Consolas, monospace',
-            fontWeight: "400",
-            letterSpacing: 0.5,
-            cursorBlinking: "smooth",
-            cursorSmoothCaretAnimation: true,
-            smoothScrolling: true,
-            mouseWheelScrollSensitivity: 1,
-            fastScrollSensitivity: 5,
-            bracketPairColorization: { enabled: false },
-            guides: {
-              bracketPairs: false,
-              indentation: false,
-            },
-            occurrencesHighlight: false,
-            selectionHighlight: false,
-            matchBrackets: "never",
-          }}
         />
       </div>
 
       {!hideTerminal && (
-        <div className="h-[30%] bg-gradient-to-b from-slate-50 to-slate-100 border-t border-slate-200/60">
-          <Terminal output={output} />
+        <div className="h-[25%] bg-[#000000] flex flex-col">
+          <div className="bg-[#1a1a1a] px-8 py-2">
+            <span className="font-['Space_Grotesk'] text-[9px] uppercase tracking-[0.15em] font-bold text-[#adaaaa]">
+              System_Output_Log
+            </span>
+          </div>
+          <div className="flex-1 overflow-auto p-6 font-['JetBrains_Mono'] text-sm">
+            <Terminal output={output} />
+          </div>
         </div>
       )}
     </div>

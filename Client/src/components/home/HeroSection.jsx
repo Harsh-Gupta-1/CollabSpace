@@ -1,67 +1,47 @@
-import Illustration from "./Illustration";
+import KineticIllustration from "./KineticIllustration";
 
-export default function HeroSection({ 
-  setShowSignupModal, 
-  scrollToSection 
+export default function HeroSection({
+  setShowSignupModal,
+  scrollToSection,
 }) {
   return (
-    <section className="relative overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
-          {/* Left Side - Content */}
-          <div className="space-y-8">
-            <div>
-              <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
-                Code, Draw &
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-indigo-600">
-                  {" "}
-                  Collaborate
-                </span>
-              </h1>
-              <p className="text-xl text-gray-600 mt-6 leading-relaxed">
-                Real-time collaborative workspace where teams can code
-                together, brainstorm on whiteboards, and communicate
-                seamlessly - all in one place.
-              </p>
-            </div>
-
-            <div className="flex flex-col sm:flex-row gap-4">
-              <button
-                onClick={() => setShowSignupModal(true)}
-                className="px-8 py-4 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-200"
-              >
-                Get Started Free
-              </button>
-              <button
-                onClick={() => scrollToSection("features")}
-                className="px-8 py-4 border-2 border-purple-600 text-purple-600 hover:bg-purple-50 rounded-xl font-semibold transition-all duration-200"
-              >
-                Learn More
-              </button>
-            </div>
-
-            <div className="flex items-center space-x-8 text-sm text-gray-500">
-              <div className="flex items-center space-x-2">
-                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                <span>Real-time sync</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-                <span>Secure & private</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                <span>No setup required</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Right Side - Illustration */}
-          <div className="relative">
-            <Illustration />
-          </div>
+    <section className="relative flex flex-col items-center justify-center overflow-hidden pt-20 px-6 dot-grid">
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/40 to-background pointer-events-none"></div>
+      <div className="relative z-10 text-center max-w-4xl mx-auto mb-12">
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-surface-container-high border border-outline-variant/20 mb-8">
+          <span className="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse"></span>
+          <span className="font-label text-[10px] uppercase tracking-[0.3em] text-on-surface-variant">
+            Version 2.0.4 Operational
+          </span>
+        </div>
+        <h1 className="font-headline text-6xl md:text-8xl font-bold tracking-tighter mb-8 leading-[0.9]">
+          Think Together.
+          <br />
+          <span className="text-primary italic">Build Together.</span>
+        </h1>
+        <p className="text-on-surface-variant text-lg md:text-xl max-w-2xl mx-auto mb-10 font-body leading-relaxed">
+          The precision-engineered workspace for technical teams. Synchronous
+          whiteboarding and distributed code execution.
+        </p>
+        <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
+          <button
+            onClick={() => setShowSignupModal(true)}
+            className="group relative px-10 py-5 bg-primary text-on-primary font-label font-bold text-xs uppercase tracking-[0.2em] rounded-sm custom-glow overflow-hidden"
+          >
+            <span className="relative z-10">Start a Room</span>
+            <div className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform"></div>
+          </button>
+          <button
+            onClick={() => scrollToSection("how-it-works")}
+            className="px-10 py-5 border border-outline-variant/30 hover:border-secondary text-on-surface font-label text-xs uppercase tracking-[0.2em] rounded-sm transition-all bg-surface/40 backdrop-blur-sm"
+          >
+            Join a Room
+          </button>
         </div>
       </div>
+
+      {/* Kinetic Illustration */}
+      <KineticIllustration />
     </section>
   );
 }

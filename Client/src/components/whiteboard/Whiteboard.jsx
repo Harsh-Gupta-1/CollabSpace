@@ -10,23 +10,19 @@ export default function EnhancedWhiteboard({ roomId = "demo", canvasStateRef }) 
   const undoStackRef = useRef([]);
   const redoStackRef = useRef([]);
 
-  // State management - Default tool is now "pen"
-  const [tool, setTool] = useState("pen");
-  const [color, setColor] = useState("#4f46e5");
+  const [tool, setTool] = useState("select");
+  const [color, setColor] = useState("#73ffe3");
   const [brushSize, setBrushSize] = useState(3);
   const [zoom, setZoom] = useState(100);
 
-  // Initialize canvas
   const {
     saveCanvasState,
-    addShape,
-    addText,
     deleteSelected,
     undo,
     clearCanvas,
     resetZoom,
     zoomIn,
-    zoomOut
+    zoomOut,
   } = useCanvasInitialization({
     canvasRef,
     fabricCanvasRef,
@@ -37,33 +33,19 @@ export default function EnhancedWhiteboard({ roomId = "demo", canvasStateRef }) 
     tool,
     color,
     brushSize,
-    setZoom
+    setZoom,
+    setTool,
   });
 
-  // Initialize socket logic
   useSocketLogic({ roomId, fabricCanvasRef, isLoadingRef, saveCanvasState });
 
-  // Enhanced shape adding function that includes setTool
-  const handleAddShape = (shapeType) => {
-    addShape(shapeType, setTool);
-  };
-
-  // Enhanced text adding function that includes setTool
-  const handleAddText = () => {
-    addText(setTool);
-  };
-
   return (
-    <div className="relative w-full h-full overflow-hidden bg-gradient-to-br from-white via-indigo-50/30 to-purple-50/20">
-      {/* Canvas */}
-      <canvas ref={canvasRef} className="w-full h-full" />
+    <div className="relative h-full min-h-0 w-full overflow-hidden">
+      <canvas ref={canvasRef} className="block h-full w-full" />
 
-      {/* Toolbar */}
       <Toolbar
         tool={tool}
         setTool={setTool}
-        addShape={handleAddShape}
-        addText={handleAddText}
         deleteSelected={deleteSelected}
         undo={undo}
         clearCanvas={clearCanvas}

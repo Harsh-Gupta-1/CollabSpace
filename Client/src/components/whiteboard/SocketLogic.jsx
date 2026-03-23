@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { getSocket } from "../../sockets/socket";
-import { debounce } from 'lodash';
+import { debounce } from "lodash";
+import { DS } from "./fabricDesignSystem";
 
 export default function useSocketLogic({ roomId, fabricCanvasRef, isLoadingRef, saveCanvasState }) {
   const socketRef = useRef(null);
@@ -42,7 +43,7 @@ export default function useSocketLogic({ roomId, fabricCanvasRef, isLoadingRef, 
             scaleY: obj.scaleY,
             angle: obj.angle
           };
-        case 'circle':
+        case "circle":
           return {
             ...baseData,
             radius: obj.radius,
@@ -51,9 +52,23 @@ export default function useSocketLogic({ roomId, fabricCanvasRef, isLoadingRef, 
             strokeWidth: obj.strokeWidth,
             scaleX: obj.scaleX,
             scaleY: obj.scaleY,
-            angle: obj.angle
+            angle: obj.angle,
           };
-        case 'triangle':
+        case "ellipse":
+          return {
+            ...baseData,
+            rx: obj.rx,
+            ry: obj.ry,
+            originX: obj.originX,
+            originY: obj.originY,
+            fill: obj.fill,
+            stroke: obj.stroke,
+            strokeWidth: obj.strokeWidth,
+            scaleX: obj.scaleX,
+            scaleY: obj.scaleY,
+            angle: obj.angle,
+          };
+        case "triangle":
           return {
             ...baseData,
             width: obj.width,
@@ -63,18 +78,45 @@ export default function useSocketLogic({ roomId, fabricCanvasRef, isLoadingRef, 
             strokeWidth: obj.strokeWidth,
             scaleX: obj.scaleX,
             scaleY: obj.scaleY,
-            angle: obj.angle
+            angle: obj.angle,
           };
-        case 'i-text':
+        case "line":
+          return {
+            ...baseData,
+            x1: obj.x1,
+            y1: obj.y1,
+            x2: obj.x2,
+            y2: obj.y2,
+            stroke: obj.stroke,
+            strokeWidth: obj.strokeWidth,
+            scaleX: obj.scaleX,
+            scaleY: obj.scaleY,
+            angle: obj.angle,
+          };
+        case "polygon":
+          return {
+            ...baseData,
+            points: obj.points,
+            fill: obj.fill,
+            stroke: obj.stroke,
+            strokeWidth: obj.strokeWidth,
+            scaleX: obj.scaleX,
+            scaleY: obj.scaleY,
+            angle: obj.angle,
+          };
+        case "i-text":
           return {
             ...baseData,
             text: obj.text,
             fill: obj.fill,
             fontSize: obj.fontSize,
             fontFamily: obj.fontFamily,
+            fontWeight: obj.fontWeight,
+            charSpacing: obj.charSpacing,
+            lineHeight: obj.lineHeight,
             scaleX: obj.scaleX,
             scaleY: obj.scaleY,
-            angle: obj.angle
+            angle: obj.angle,
           };
         default:
           const fullObj = obj.toObject(['id']);
@@ -99,13 +141,28 @@ export default function useSocketLogic({ roomId, fabricCanvasRef, isLoadingRef, 
           const rectObj = new fabric.Rect(objData);
           callback(rectObj);
           break;
-        case 'circle':
+        case "circle":
           const circleObj = new fabric.Circle(objData);
           callback(circleObj);
           break;
-        case 'triangle':
+        case "ellipse":
+          const ellipseObj = new fabric.Ellipse(objData);
+          callback(ellipseObj);
+          break;
+        case "triangle":
           const triangleObj = new fabric.Triangle(objData);
           callback(triangleObj);
+          break;
+        case "line":
+          const lineObj = new fabric.Line(
+            [objData.x1, objData.y1, objData.x2, objData.y2],
+            objData
+          );
+          callback(lineObj);
+          break;
+        case "polygon":
+          const polyObj = new fabric.Polygon(objData.points, objData);
+          callback(polyObj);
           break;
         case 'i-text':
           const textObj = new fabric.IText(objData.text || '', objData);
@@ -134,9 +191,9 @@ export default function useSocketLogic({ roomId, fabricCanvasRef, isLoadingRef, 
         isLoadingRef.current = true;
         canvas.loadFromJSON(data.canvasData, () => {
           canvas.getObjects().forEach(obj => {
-            if (obj.type === 'path' && obj.fill !== 'transparent' && !obj.stroke) {
-              obj.set('fill', 'transparent');
-              obj.set('stroke', obj.fill || '#000000');
+            if (obj.type === "path" && obj.fill !== "transparent" && !obj.stroke) {
+              obj.set("fill", "transparent");
+              obj.set("stroke", obj.fill || DS.primary);
             }
           });
           canvas.renderAll();
@@ -165,9 +222,9 @@ export default function useSocketLogic({ roomId, fabricCanvasRef, isLoadingRef, 
           canvas.remove(obj);
           canvas.renderAll();
         }
-      } else if (data.type === 'clear') {
+      } else if (data.type === "clear") {
         canvas.clear();
-        canvas.backgroundColor = '#ffffff';
+        canvas.backgroundColor = "rgba(0,0,0,0)";
         canvas.renderAll();
       }
     };

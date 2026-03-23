@@ -6,12 +6,9 @@ import { getRoom } from "../api/roomAPI";
 import { getSocket, disconnectSocket } from "../sockets/socket";
 import Whiteboard from "../components/whiteboard/Whiteboard";
 import CodeEditor from "../components/room/CodeEditor";
-import SplitView from "../components/room/SplitView";
 import ChatPanel from "../components/room/ChatPanel";
-import Navbar from "../components/room/Navbar";
+import Sidebar from "../components/room/Sidebar";
 import { executeCode } from "../api/executeAPI";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 
 export default function Room() {
   const { id } = useParams();
@@ -19,6 +16,7 @@ export default function Room() {
   const location = useLocation();
   const canvasStateRef = useRef(null);
   const [mode, setMode] = useState("whiteboard");
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const [codeSnippet, setCodeSnippet] = useState("");
   const [output, setOutput] = useState("");
   const [loading, setLoading] = useState(true);
@@ -30,9 +28,20 @@ export default function Room() {
   const [participants, setParticipants] = useState([]);
   const hasJoinedRoom = useRef(false);
   const socketRef = useRef(null);
-  
-const userName = location.state?.name;
-    
+
+  const userName = location.state?.name;
+
+  const bumpLayout = useCallback(() => {
+    requestAnimationFrame(() => {
+      window.dispatchEvent(new Event("resize"));
+    });
+  }, []);
+
+  const toggleSidebar = useCallback(() => {
+    setSidebarOpen((o) => !o);
+    setTimeout(bumpLayout, 320);
+  }, [bumpLayout]);
+
   useEffect(() => {
     if (!userName) {
       navigate("/");
@@ -94,7 +103,7 @@ const userName = location.state?.name;
       }
       if (whiteboard) {
         canvasStateRef.current = JSON.stringify(whiteboard);
-        if (mode === "whiteboard" || mode === "split") {
+        if (mode === "whiteboard") {
           window.dispatchEvent(new Event("canvasRestore"));
         }
       }
@@ -166,7 +175,7 @@ const userName = location.state?.name;
       setMode(newMode);
       setTimeout(() => {
         window.dispatchEvent(new Event("resize"));
-        if (newMode === "whiteboard" || newMode === "split") {
+        if (newMode === "whiteboard") {
           socketRef.current?.emit("get-room-state", { roomId: id });
           window.dispatchEvent(new Event("canvasRestore"));
         }
@@ -189,71 +198,77 @@ const userName = location.state?.name;
     );
 
   return (
-    <div className="h-screen w-screen bg-white text-gray-800 font-inter overflow-hidden">
-      <Navbar
-        roomId={id}
-        roomName={roomName}
-        userName={userName}
-        isConnected={isConnected}
-        mode={mode}
-        onModeChange={handleModeChange}
-        onLeave={handleLeave}
-      />
+    <div className="relative h-screen w-screen overflow-hidden bg-background font-body text-on-surface">
+      {/* LEFT SIDEBAR */}
+      <aside
+        className={`fixed left-0 top-0 z-50 h-full w-64 border-r-0 bg-neutral-950 shadow-[0_0_24px_-4px_rgba(115,255,227,0.1)] transition-transform duration-300 ease-out dark:bg-[#0e0e0e] ${
+          sidebarOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        <Sidebar
+          roomId={id}
+          userCount={userCount}
+          mode={mode}
+          onModeChange={handleModeChange}
+          onLeave={handleLeave}
+        />
+      </aside>
 
-      <div className="h-[calc(100vh-64px)] p-2 bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden">
-        {mode === "whiteboard" || mode === "code" ? (
-          <div className="flex h-full overflow-hidden">
-            <div className="flex-1 h-full relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 rounded-lg" />
-              <div className="relative h-full bg-white rounded-lg shadow-sm border border-gray-200/50 overflow-hidden">
-                {mode === "whiteboard" ? (
-                  <Whiteboard
-                    roomId={id}
-                    socket={socketRef.current}
-                    canvasStateRef={canvasStateRef}
-                  />
-                ) : (
-                  <CodeEditor
-                    code={codeSnippet}
-                    onChange={handleCodeChange}
-                    onExecute={handleExecute}
-                    output={output}
-                    roomId={id}
-                  />
-                )}
-              </div>
-            </div>
-            <div className="w-[300px] h-full relative">
-              <div className="absolute inset-0 bg-gradient-to-b from-indigo-500/20 via-purple-500/20 to-blue-500/20 rounded-lg" />
-              <div className="relative h-full bg-white rounded-lg shadow-sm border border-gray-200/50 overflow-hidden flex flex-col">
-                <ChatPanel
-                  roomId={id}
-                  user={userName}
-                  onSendMessage={handleSendMessage}
-                  messages={messages}
-                  userCount={userCount}
-                  participants={participants}
-                  isConnected={isConnected}
-                />
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div className="h-full">
-            <SplitView
+      {/* Sidebar toggle — bottom seam avoids overlap with whiteboard toolbar (left rail is top-heavy) */}
+      <button
+        type="button"
+        onClick={toggleSidebar}
+        aria-label={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
+        title={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
+        className={`fixed bottom-24 z-[60] flex h-10 w-8 items-center justify-center rounded-r-md border border-outline-variant/30 bg-surface-container-highest text-on-surface-variant shadow-[0_0_16px_-4px_rgba(0,0,0,0.5)] transition-all duration-300 hover:border-primary/40 hover:text-primary ${
+          sidebarOpen ? "left-[256px]" : "left-0"
+        }`}
+      >
+        <span className="material-symbols-outlined text-sm">
+          {sidebarOpen ? "chevron_left" : "chevron_right"}
+        </span>
+      </button>
+
+      {/* MAIN — dotted grid only in whiteboard mode; code mode uses flat surface */}
+      <main
+        className={`relative flex min-h-0 min-w-0 flex-1 flex-col transition-[margin] duration-300 ease-out ${
+          sidebarOpen ? "ml-64" : "ml-0"
+        } mr-80 h-full ${
+          mode === "whiteboard"
+            ? "bg-surface kinetic-grid"
+            : "bg-[#0e0e0e]"
+        }`}
+      >
+        <div className="relative z-10 flex min-h-0 flex-1 flex-col">
+          {mode === "whiteboard" ? (
+            <Whiteboard
               roomId={id}
-              codeSnippet={codeSnippet}
+              socket={socketRef.current}
               canvasStateRef={canvasStateRef}
-              onCodeChange={handleCodeChange}
+            />
+          ) : (
+            <CodeEditor
+              code={codeSnippet}
+              onChange={handleCodeChange}
               onExecute={handleExecute}
               output={output}
-              user={userName}
+              roomId={id}
             />
-          </div>
-        )}
-      </div>
+          )}
+        </div>
+      </main>
 
-      <ToastContainer />
+      {/* RIGHT: chat + participants */}
+      <ChatPanel
+        roomId={id}
+        user={userName}
+        onSendMessage={handleSendMessage}
+        messages={messages}
+        userCount={userCount}
+        participants={participants}
+        isConnected={isConnected}
+      />
+
     </div>
   );
 }

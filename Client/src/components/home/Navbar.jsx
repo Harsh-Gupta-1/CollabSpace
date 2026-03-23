@@ -1,59 +1,45 @@
-import { Code } from "lucide-react";
-
-export default function Navbar({ 
-  scrollToSection, 
-  setShowLoginModal, 
-  setShowSignupModal 
+export default function Navbar({
+  scrollToSection,
+  setShowLoginModal,
+  setShowSignupModal,
 }) {
   return (
-    <nav className="bg-white/80 backdrop-blur-md border-b border-purple-100 sticky top-0 z-40">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-lg flex items-center justify-center">
-              <Code className="w-5 h-5 text-white" />
-            </div>
-            <span className="text-xl font-bold text-gray-800">
-              CollabSpace
-            </span>
-          </div>
-
-          {/* Navigation Links */}
-          <div className="hidden md:flex items-center space-x-8">
-            <button
-              onClick={() => scrollToSection("how-it-works")}
-              className="text-gray-600 hover:text-purple-600 font-medium transition-colors"
-            >
-              How It Works
-            </button>
-            <button
-              onClick={() => scrollToSection("features")}
-              className="text-gray-600 hover:text-purple-600 font-medium transition-colors"
-            >
-              Features
-            </button>
-            <button
-              onClick={() => scrollToSection("contact")}
-              className="text-gray-600 hover:text-purple-600 font-medium transition-colors"
-            >
-              Contact
-            </button>
-          </div>
-
-          <div className="flex items-center space-x-4">
-            <button
-              onClick={() => setShowLoginModal(true)}
-              className="px-4 py-2 text-purple-600 hover:text-purple-700 font-medium transition-colors"
-            >
-              Login
-            </button>
-            <button
-              onClick={() => setShowSignupModal(true)}
-              className="px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium transition-colors"
-            >
-              Sign Up
-            </button>
-          </div>
+    <nav className="sticky top-0 z-50 bg-surface/80 backdrop-blur-md border-b border-outline-variant/10 px-8 py-4 flex items-center justify-between">
+      <div className="flex items-center gap-12">
+        <div className="flex items-center gap-3">
+          <img src="/logo.svg" alt="CollabSpace Logo" className="w-8 h-8" />
+          <span className="font-headline font-bold text-xl tracking-tight text-on-surface">
+            CollabSpace
+          </span>
+        </div>
+        <div className="hidden md:flex gap-8">
+          <button
+            onClick={() => scrollToSection("how-it-works")}
+            className="font-label text-xs uppercase tracking-[0.2em] text-on-surface-variant hover:text-primary transition-colors"
+          >
+            How It Works
+          </button>
+          <button
+            onClick={() => scrollToSection("features")}
+            className="font-label text-xs uppercase tracking-[0.2em] text-on-surface-variant hover:text-primary transition-colors"
+          >
+            Features
+          </button>
+        </div>
+      </div>
+      <div className="flex items-center gap-6">
+        <button
+          onClick={() => setShowLoginModal(true)}
+          className="font-label text-xs uppercase tracking-[0.2em] px-5 py-2.5 border border-outline-variant/30 hover:border-primary transition-all"
+        >
+          Dashboard
+        </button>
+        <div className="w-9 h-9 rounded-full bg-surface-container-high border border-outline-variant/20 overflow-hidden ring-1 ring-outline-variant/10">
+          <img
+            alt="User Profile"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuBpSiCw-bG41a-TqR_8B_DOSJa6N6DCvXply_lOb8PSDZEHnXmQt7bV1-ji4DBguAI_bL_BaBopIt7140U7MoDlknt2pCuDMnIMeBw9FA6bjYhrXbYUW9C9LpcSp5FjdLEMLRtryR4Fxe3H1PpmIZDJ5ohDrjdtcDOnMiBJFvtWrZnhTDxq8qvNOHvnG0IZw_98aGMicyAHz__qStEPUuNhPAptdbQMlH-DjKdlYVpIDx9cRGIe1Cg1m8dIQmNqrnb4n7Y6CoKWOlwv"
+            className="w-full h-full object-cover"
+          />
         </div>
       </div>
     </nav>

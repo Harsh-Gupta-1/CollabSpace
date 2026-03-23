@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 import axios from "axios";
 import Navbar from "../components/home/Navbar";
 import HeroSection from "../components/home/HeroSection";
@@ -140,31 +139,31 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-purple-50 to-white">
-      <ToastContainer
-        position="top-center"
-        toastClassName="backdrop-blur-sm bg-white/90 text-gray-800 border border-purple-200"
-      />
-
+    <div className="min-h-screen bg-background text-on-surface font-body selection:bg-primary/30 antialiased">
       <Navbar
         scrollToSection={scrollToSection}
         setShowLoginModal={setShowLoginModal}
         setShowSignupModal={setShowSignupModal}
       />
 
-      <HeroSection
-        setShowSignupModal={setShowSignupModal}
-        scrollToSection={scrollToSection}
-      />
+      <main className="relative">
+        <HeroSection
+          setShowSignupModal={setShowSignupModal}
+          scrollToSection={scrollToSection}
+        />
 
-      <HowItWorks />
+        <HowItWorks />
 
-      <FeaturesSection />
+        <FeaturesSection />
 
-      <Footer
-        setShowSignupModal={setShowSignupModal}
-        scrollToSection={scrollToSection}
-      />
+        <Footer
+          setShowSignupModal={setShowSignupModal}
+          scrollToSection={scrollToSection}
+        />
+
+        {/* Global Activity Overlay */}
+
+      </main>
 
       {/* Authentication Modals */}
       <AuthModals

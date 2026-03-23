@@ -1,92 +1,48 @@
-import { Code, Mail, Github, Linkedin } from "lucide-react";
-
 export default function Footer({ 
   scrollToSection, 
   setShowSignupModal 
 }) {
   return (
-    <footer id="contact" className="bg-gray-900 text-white py-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid md:grid-cols-3 gap-8">
-          {/* Brand */}
-          <div className="space-y-4">
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-lg flex items-center justify-center">
-                <Code className="w-5 h-5 text-white" />
-              </div>
-              <span className="text-xl font-bold">CollabSpace</span>
-            </div>
-            <p className="text-gray-400">
-              Real-time collaborative workspace for teams to code, draw, and
-              communicate together.
-            </p>
-          </div>
-
-          {/* Quick Links */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Quick Links</h3>
-            <div className="space-y-2">
-              <button
-                onClick={() => scrollToSection("features")}
-                className="block text-gray-400 hover:text-white transition-colors"
-              >
-                Features
-              </button>
-              <button
-                onClick={() => scrollToSection("how-it-works")}
-                className="block text-gray-400 hover:text-white transition-colors"
-              >
-                How It Works
-              </button>
-              <button
-                onClick={() => setShowSignupModal(true)}
-                className="block text-gray-400 hover:text-white transition-colors"
-              >
-                Get Started
-              </button>
-            </div>
-          </div>
-
-          {/* Contact */}
-          <div className="space-y-2">
-            <h3 className="text-lg font-semibold">Connect</h3>
-
-            {/* Email shown plainly */}
-            <div className="flex items-center space-x-2 text-gray-400">
-              <Mail className="w-5 h-5" />
-              <span>contact@harshgupta2706@gmail.com</span>
-            </div>
-
-            {/* Socials as icons */}
-            <div className="flex space-x-4 mt-2">
-              <a
-                href="https://github.com/Harsh-Gupta-1"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-10 h-10 bg-gray-800 hover:bg-purple-600 rounded-lg flex items-center justify-center transition-colors"
-              >
-                <Github className="w-5 h-5" />
-              </a>
-              <a
-                href="https://www.linkedin.com/in/harsh-gupta-9b6a74301/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-10 h-10 bg-gray-800 hover:bg-purple-600 rounded-lg flex items-center justify-center transition-colors"
-              >
-                <Linkedin className="w-5 h-5" />
-              </a>
-            </div>
-          </div>
-        </div>
-
-        <div className="border-t border-gray-800 mt-8 pt-8 text-center">
-          <p className="text-gray-400">
-            © 2025 CollabSpace. Built with ❤️ for better collaboration. <br />
-            <span className="text-sm text-gray-500">
-              Crafted by{" "}
-              <span className="text-white font-semibold">Harsh Gupta</span>
+    <footer className="bg-surface-container-lowest border-t border-outline-variant/10 py-16 px-8">
+      <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-10">
+        <div className="flex flex-col items-center md:items-start">
+          <div className="flex items-center gap-3 mb-2">
+            <img src="/logo.svg" alt="CollabSpace Logo" className="w-8 h-8" />
+            <span className="font-headline font-bold text-xl tracking-tight">
+              CollabSpace
             </span>
+          </div>
+          <p className="text-on-surface-variant text-[10px] font-label uppercase tracking-[0.3em]">
+            Precision Collaboration Platform 2024
           </p>
+        </div>
+        <div className="flex flex-wrap justify-center gap-12">
+          <a
+            href="https://github.com/Harsh-Gupta-1"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-label text-[10px] uppercase tracking-[0.3em] text-on-surface-variant hover:text-secondary transition-colors"
+          >
+            GitHub Repo
+          </a>
+          <button
+            onClick={() => scrollToSection("features")}
+            className="font-label text-[10px] uppercase tracking-[0.3em] text-on-surface-variant hover:text-secondary transition-colors"
+          >
+            API Spec
+          </button>
+          <button
+            onClick={() => scrollToSection("how-it-works")}
+            className="font-label text-[10px] uppercase tracking-[0.3em] text-on-surface-variant hover:text-secondary transition-colors"
+          >
+            System Status
+          </button>
+          <button
+            onClick={() => setShowSignupModal(true)}
+            className="font-label text-[10px] uppercase tracking-[0.3em] text-on-surface-variant hover:text-secondary transition-colors"
+          >
+            Get Started
+          </button>
         </div>
       </div>
     </footer>

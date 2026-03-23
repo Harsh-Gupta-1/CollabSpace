@@ -1,15 +1,143 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="dark" lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-     <link rel="icon" type="image/x-icon" href="/favicon.png">
-    <link
-      href="https://fonts.googleapis.com/css2?family=Silkscreen&display=swap"
-      rel="stylesheet"
-    />
-    <link href="https://fonts.googleapis.com/css2?family=Inter&family=Open+Sans&family=Silkscreen&display=swap" rel="stylesheet">
-    <title>CollabSpace</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Space+Grotesk:wght@500;700&family=JetBrains+Mono&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+            "error-container": "#9f0519",
+            "surface-container-highest": "#262626",
+            "on-tertiary-container": "#462400",
+            "tertiary-container": "#fd9000",
+            "tertiary": "#ffa44c",
+            "secondary-dim": "#b7e500",
+            "error": "#ff716c",
+            "outline-variant": "#484847",
+            "inverse-on-surface": "#565555",
+            "on-tertiary-fixed": "#281200",
+            "tertiary-dim": "#ea8400",
+            "surface-tint": "#73ffe3",
+            "primary-dim": "#00e8c9",
+            "primary": "#73ffe3",
+            "secondary": "#c3f400",
+            "surface-container-lowest": "#000000",
+            "primary-fixed": "#12f8d7",
+            "on-secondary-fixed": "#354500",
+            "tertiary-fixed": "#ff9727",
+            "primary-container": "#00f5d4",
+            "on-surface-variant": "#adaaaa",
+            "primary-fixed-dim": "#00e8c9",
+            "inverse-surface": "#fcf9f8",
+            "on-primary": "#006152",
+            "surface-container": "#1a1919",
+            "on-secondary-container": "#efffbc",
+            "tertiary-fixed-dim": "#f18900",
+            "surface-container-low": "#131313",
+            "surface": "#0e0e0e",
+            "on-error": "#490006",
+            "on-tertiary-fixed-variant": "#592f00",
+            "on-primary-fixed": "#00443a",
+            "background": "#0e0e0e",
+            "secondary-container": "#506600",
+            "on-error-container": "#ffa8a3",
+            "surface-container-high": "#201f1f",
+            "on-primary-container": "#00574a",
+            "on-background": "#ffffff",
+            "on-tertiary": "#552d00",
+            "error-dim": "#d7383b",
+            "on-secondary-fixed-variant": "#4e6300",
+            "surface-bright": "#2c2c2c",
+            "secondary-fixed": "#c3f400",
+            "on-primary-fixed-variant": "#006455",
+            "outline": "#767575",
+            "secondary-fixed-dim": "#b7e500",
+            "inverse-primary": "#006c5c",
+            "on-surface": "#ffffff",
+            "on-secondary": "#455900",
+            "surface-dim": "#0e0e0e",
+            "surface-variant": "#262626"
+          },
+          fontFamily: {
+            "headline": ["Inter"],
+            "body": ["Inter"],
+            "label": ["Space Grotesk"],
+            "mono": ["JetBrains Mono"]
+          },
+          borderRadius: { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" }
+                }
+            }
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .kinetic-grid {
+            background-image: radial-gradient(circle at 1px 1px, #484847 1px, transparent 0);
+            background-size: 32px 32px;
+        }
+        .kinetic-grid-bright {
+            background-image: radial-gradient(circle at 1px 1px, #484847 1px, transparent 0);
+            background-size: 32px 32px;
+        }
+        .bg-grid {
+            background-image: radial-gradient(circle, #484847 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+        .primary-glow {
+            box-shadow: 0 0 24px -4px rgba(0, 245, 212, 0.15);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #0e0e0e;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #262626;
+        }
+        .cursor-anim {
+          animation: cursor-float 6s ease-in-out infinite;
+        }
+        @keyframes cursor-float {
+          0%, 100% { transform: translate(0, 0); }
+          33% { transform: translate(40px, 20px); }
+          66% { transform: translate(-20px, 50px); }
+        }
+        .selection\:bg-primary\/30::selection {
+          background-color: rgba(0, 245, 212, 0.3);
+        }
+        .dot-grid {
+            background-image: radial-gradient(circle, #484847 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+        .blueprint-grid {
+            background-image: linear-gradient(#1a1919 1px, transparent 1px), linear-gradient(90deg, #1a1919 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        .custom-glow {
+            box-shadow: 0 0 24px -4px rgba(115, 255, 227, 0.2);
+        }
+        .card-texture {
+            background-image: radial-gradient(circle at 1px 1px, #ffffff05 1px, transparent 0);
+            background-size: 20px 20px;
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .ui-grid {
+            background-image: radial-gradient(circle, #333 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+    </style>
+    <title>CollabSpace - Engineering Precision Workspace</title>
   </head>
   <body>
     <div id="root"></div>

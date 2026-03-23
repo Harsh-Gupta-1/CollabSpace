@@ -1,20 +1,58 @@
-# Ignore node_modules in all folders
-**/node_modules/
+# Dependencies
+node_modules/
+Client/node_modules/
+Server/node_modules/
 
-# Ignore environment files
-**/.env
-.env.local
-.env.*.local
+# Environment files
+.env
+.env.*
+!.env.example
+!.env.*.example
+Client/.env
+Client/.env.*
+Server/.env
+Server/.env.*
 
-# Ignore logs
-logs
+# Build outputs
+Client/dist/
+Server/dist/
+Server/build/
+build/
+dist/
+
+# Coverage
+coverage/
+*.lcov
+
+# Logs
+logs/
 *.log
 npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
 
-# Ignore build files
-dist/
-build/
+# Runtime files
+pids/
+*.pid
+*.seed
+*.pid.lock
 
-# OS-specific
+# Caches
+.cache/
+.parcel-cache/
+.eslintcache
+*.tsbuildinfo
+
+# Vite
+Client/.vite/
+
+# Editor/OS files
+.vscode/
+.idea/
 .DS_Store
 Thumbs.db
+
+# Optional local config
+*.local
