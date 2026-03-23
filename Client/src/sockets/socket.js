@@ -4,7 +4,7 @@ const backendURL = import.meta.env.VITE_BACKEND_URL;
 let globalSocket = null;
 
 export const getSocket = () => {
-  if (!globalSocket || !globalSocket.connected) {
+  if (!globalSocket) {
     globalSocket = io(backendURL, { // Match server port
       transports: ["websocket", "polling"],
       forceNew: false,
